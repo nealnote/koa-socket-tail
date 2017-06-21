@@ -34,20 +34,20 @@ app.keys = ['by koa socket.io'];
 
 // socket.io
 io.on('connection', (socket) => {
+  const shell = spawn(platform == 'win32' ? 'cmd' : 'bash')
   const output = (msg) => {
-    console.log(msg.toString());
-    io.emit('log', msg.toString());
+    socket.emit('log', msg.toString());
   }
-  console.log('a user connected');
-  const shell = spawn(platform == 'win32' ? 'cmd' : 'bash');
+  //console.log('a user connected', socket.id);
   socket.on('disconnect', () => {
-    shell.kill('SIGKILL');
-    console.log('user disconnected');
+    shell.kill();
+    //console.log('user disconnected', socket.id);
   });
   shell.stdout.on('data', output);
   shell.stderr.on('data', output);
   shell.on('close', () => {
     output('Exit');
+    //console.log('shell close');
   });
   socket.on('input', (data) => {
     shell.stdin.write(data)
