@@ -10,7 +10,7 @@ const session = require('koa-session');
 const env = process.env.NODE_ENV || 'development';
 const port = process.env.PORT || 4002;
 const host = process.env.HOST || '0.0.0.0';
-const file = process.env.FILE || 'D:\\nginx\\logs\\access.log';
+const { platform } = process;
 const DEBUG = (env !== 'production');
 
 const router = require('koa-router')();
@@ -29,22 +29,28 @@ const pug = new Pug({
 
 const server = http.createServer(app.callback());
 const io = require('socket.io')(server);
-const tail = spawn("tail", ["-f", file]);
 
 app.keys = ['by koa socket.io'];
 
 // socket.io
 io.on('connection', (socket) => {
+  const output = (msg) => {
+    console.log(msg.toString());
+    io.emit('log', msg.toString());
+  }
   console.log('a user connected');
+  const shell = spawn(platform == 'win32' ? 'cmd' : 'bash');
   socket.on('disconnect', () => {
+    shell.kill('SIGKILL');
     console.log('user disconnected');
   });
-  tail.stdout.on("data", (data) => {
-    data.toString().split('\n').forEach((v)=>{
-      if(v.length){
-        io.emit('log', v);
-      }
-    })
+  shell.stdout.on('data', output);
+  shell.stderr.on('data', output);
+  shell.on('close', () => {
+    output('Exit');
+  });
+  socket.on('input', (data) => {
+    shell.stdin.write(data)
   })
 })
 

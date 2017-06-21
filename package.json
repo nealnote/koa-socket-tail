@@ -2,7 +2,8 @@
   "name": "socket",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c && rollup -c -w"
+    "dev": "nodemon -e js,pug,jade,styl,css server.js",
+    "watch": "rollup -c && rollup -c -w"
   },
   "dependencies": {
     "koa": "^2.2.0",
