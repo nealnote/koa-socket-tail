@@ -26,7 +26,6 @@ const pug = new Pug({
   },
 });
 
-
 const server = http.createServer(app.callback());
 const io = require('socket.io')(server);
 
@@ -51,7 +50,7 @@ io.on('connection', (socket) => {
   });
   socket.on('input', (data) => {
     shell.stdin.write(data)
-  })
+  });
 })
 
 // session

@@ -6,6 +6,7 @@
     "watch": "rollup -c && rollup -c -w"
   },
   "dependencies": {
+    "jstransformer-stylus": "^1.3.0",
     "koa": "^2.2.0",
     "koa-pug": "^3.0.0-2",
     "koa-router": "^7.2.1",
